@@ -1,0 +1,21 @@
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.synced_folder "c:/introduction-docker-workshop/share-with-container", "/host_share"
+
+  config.vm.define "nginx-container" do |m|
+  
+    m.vm.provider :docker do |d| 
+      d.build_dir = "./docker"
+	  d.name = 'nginx-container'
+      d.vagrant_machine = "dockerhost"
+      d.vagrant_vagrantfile = "../DockerHost/DockerHostVagrantfile" 
+      d.remains_running = true 
+	  # forward port 8080 on dockerhost to port 80 in container nginx-container
+      d.ports = ["8080:80"] 
+	  end
+  end 
+
+end  

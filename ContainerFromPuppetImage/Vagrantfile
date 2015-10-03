@@ -1,0 +1,21 @@
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.synced_folder "c:/introduction-docker-workshop/share-with-container", "/host_share"
+
+  config.vm.define "after-puppet-container" do |m|
+  
+    m.vm.provider :docker do |d| 
+      d.image = "me-myimage:version1"
+      d.cmd = ["ping", "-c 551", "127.0.0.1"] 
+	  d.name = 'after-puppet-container'
+      d.vagrant_machine = "dockerhost"
+      d.vagrant_vagrantfile = "../DockerHost/DockerHostVagrantfile" 
+      d.remains_running = true 
+
+	  end
+  end 
+
+end  

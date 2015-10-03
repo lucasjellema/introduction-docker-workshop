@@ -1,0 +1,25 @@
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+## based on http://barrybrierley.blogspot.nl/2015/06/installing-apex-on-linux-virtual-box.html and more
+
+# after starting access APEX:
+# http://dockerhost:8080/apex
+#  workspace: INTERNAL user: ADMIN password: oracle 
+
+Vagrant.configure("2") do |config|
+
+  config.vm.synced_folder "c:/introduction-docker-workshop/share-with-container", "/host_share"
+  config.vm.synced_folder "c:/introduction-docker-workshop/software/xe", "/software"
+
+  config.vm.define "oraclexe-container" do |m|
+    m.vm.provider :docker do |d| 
+      d.image = "alexeiled/docker-oracle-xe-11g"
+	  d.name = 'oraclexe-container'
+	  d.ports =[ "8080:8080", "1521:1521", "9022:22"]
+      d.vagrant_machine = "dockerhost"
+      d.vagrant_vagrantfile = "../DockerHost/DockerHostVagrantfile" 
+      d.remains_running = true 
+	end
+  end 
+  
+end  

@@ -1,0 +1,30 @@
+Vagrant.configure("2") do |config|
+  config.vm.provision "docker"
+  # mount the local folder c:/docker-sig/share-with-dockerhost in the Docker Host VM as /host_share
+  config.vm.synced_folder "c:/docker-sig/share-with-dockerhost", "/host_share"
+
+  # The following line terminates all ssh connections. Therefore
+  # Vagrant will be forced to reconnect.
+  # That's a workaround to have the docker command in the PATH
+  # without it, I run into this error:
+  # Command: "docker" "ps" "-a" "-q" "--no-trunc"
+  #
+  # Stderr: Get http:///var/run/docker.sock/v1.19/containers/json?all=1: dial unix /var/run/docker.sock: permission denied.
+  # Are you trying to connect to a TLS-enabled daemon without TLS?
+
+  config.vm.provision "shell", inline:
+    "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+ 
+  config.vm.define "dockerhost"
+  config.vm.box = "ubuntu/trusty64"
+
+  ## define here the IP address on which the VM will be accessible to the Vagrant Host machine
+  config.vm.network :private_network, ip: "10.10.10.29"
+ 
+  config.vm.provider :virtualbox do |vb|
+      vb.name = "dockerhost"
+	  # set to 4GB. reduce the size of the memory in case your machine does not have enough RAM installed
+      vb.memory = 4096
+  end
+ 
+end
